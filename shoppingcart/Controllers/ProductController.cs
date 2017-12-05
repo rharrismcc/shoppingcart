@@ -71,7 +71,7 @@ namespace shoppingcart.Controllers
 
         private string ParseFilenameFromPath(string pathWithFile)
         {
-            string filename = string.Empty;
+            string filename = pathWithFile;
 
             if (pathWithFile.Contains(":\\") )
             {
@@ -145,6 +145,23 @@ namespace shoppingcart.Controllers
 
 
         // GET: Product/Edit/5
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Product product = db.Products.Find(id);
+        //    if (product == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(product);
+        //}
+
+
+
+        // GET: Product/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -156,24 +173,110 @@ namespace shoppingcart.Controllers
             {
                 return HttpNotFound();
             }
-            return View(product);
+
+
+            var model = new ProductEditViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                AltText = product.Name,
+                Caption = product.Name,
+                QtyOnHand = product.QtyOnHand,
+                Price = product.Price,
+                ImageUrl = product.ImageUrl
+            };
+            
+
+            return View(model);
+            //return View(product);
         }
+
+
+
+
+
+
 
         // POST: Product/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,QtyOnHand,ImageUrl")] Product product)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(product).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(product);
+        //}
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Price,QtyOnHand,ImageUrl")] Product product)
+        public ActionResult Edit(int id, ProductEditViewModel model)
         {
+
+            if (model.ImageUpload != null)
+            {
+                if (!validImageTypes.Contains(model.ImageUpload.ContentType))
+                {
+                    ModelState.AddModelError("ImageUpload", "Please select a GIF, JPEG or PNG");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                db.Entry(product).State = EntityState.Modified;
+                var product = db.Products.Find(id);
+
+                if (product == null)
+                {
+                    return new HttpNotFoundResult();
+                }
+
+                //  map/transform/copy the FORM(MODEL) data to the database entity
+                product.Name = model.Name;
+                product.Description = model.Description;
+                product.Price = model.Price;
+                product.QtyOnHand = model.QtyOnHand;
+                product.ImageUrl = model.ImageUrl;
+                
+                if (model.ImageUpload != null && model.ImageUpload.ContentLength > 0)
+                {
+                    var uploadDir = "~/Images";
+                    var uploadUrl = "/Images";
+
+                    var BADPATH1 = Path.Combine(Server.MapPath(uploadDir), model.ImageUpload.FileName);
+                    var BADPATH2 = Path.Combine(System.Web.Hosting.HostingEnvironment.MapPath(uploadDir), model.ImageUpload.FileName);
+
+                    var temp1 = Server.MapPath(uploadDir);
+                    var temp2 = System.Web.Hosting.HostingEnvironment.MapPath(uploadDir);
+
+                    var filename = ParseFilenameFromPath(model.ImageUpload.FileName);
+                    var imagePath = Path.Combine(temp2, filename);
+                    var imageUrl = Path.Combine(uploadUrl, filename);
+
+                    model.ImageUpload.SaveAs(imagePath);
+
+                    product.ImageUrl = imageUrl;
+                }
+
+                //////////////////////db.Products.Add(product);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(product);
+
+            return View(model);
         }
+
+
+
+
 
         // GET: Product/Delete/5
         public ActionResult Delete(int? id)
