@@ -18,11 +18,50 @@ namespace shoppingcart.Controllers
 
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        private const int PAGE_SIZE = 2;
+
+
+
         // GET: Product
-        public ActionResult Index()
+        //public ActionResult Index()
+        //{
+        //    return View(db.Products.ToList());
+        //}
+
+
+
+
+        // GET: Product
+        public ActionResult Index(int page  = 1)
         {
-            return View(db.Products.ToList());
+            //  this gets all the products in one big list
+            //var products = db.Products.ToList();
+
+            //  we want to page thru it
+            var products = db.Products
+                             .OrderBy(p => p.Name)
+                             .Skip(PAGE_SIZE * (page - 1))
+                             .Take(PAGE_SIZE);
+
+            var model = new ProductsViewModel
+            {
+                Products = products,
+                Pager = new PagingModel
+                {
+                    CurrentPage = page,
+                    ItemsPerPage = PAGE_SIZE,
+                    TotalItems = db.Products.Count()
+                }
+            };
+
+            return View(model);
+            //return View(db.Products.ToList());
         }
+
+
+
+
+
 
         // GET: Product/Details/5
         public ActionResult Details(int? id)

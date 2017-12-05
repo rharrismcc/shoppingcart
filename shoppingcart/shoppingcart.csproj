@@ -209,8 +209,10 @@
     <Compile Include="Models\HelperExtensions.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\PagingModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductEditViewModel.cs" />
+    <Compile Include="Models\ProductsViewModel.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

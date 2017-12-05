@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -72,6 +73,33 @@ namespace shoppingcart.Models
             return null;
         }
 
+
+
+
+
+
+        public static MvcHtmlString PageLinks(this HtmlHelper helper,
+                    PagingModel pagingModel, Func<int, string> pageUrl)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (pagingModel != null)
+            {
+                for (int i=1; i<=pagingModel.TotalPages; i++)
+                {
+                    TagBuilder pageTag = new TagBuilder("a");
+                    pageTag.MergeAttribute("href", pageUrl(i));
+                    pageTag.InnerHtml = i.ToString();
+
+                    pageTag.AddCssClass("btn btn-default");
+
+                    sb.Append(pageTag.ToString());
+                }
+                return MvcHtmlString.Create(sb.ToString());
+            }
+
+            return null;
+        }
 
     }
 }
