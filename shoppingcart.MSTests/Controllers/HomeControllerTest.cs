@@ -6,15 +6,20 @@ using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using shoppingcart;
 using shoppingcart.Controllers;
+using log4net;
 
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "shoppingcart.config.log4net", Watch = true)]
 namespace shoppingcart.MSTests.Controllers
 {
     [TestClass]
     public class HomeControllerTest
     {
+        log4net.ILog logger = log4net.LogManager.GetLogger(typeof(HomeControllerTest));
+
         [TestMethod]
         public void Index()
         {
+            logger.Debug("INSIDE  TEST  --  INDEX !!!");
             // Arrange
             HomeController controller = new HomeController();
 
